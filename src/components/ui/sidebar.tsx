@@ -1,14 +1,26 @@
 import { Button } from "@/components/ui/button";
 import { deleteNotes, getNotes, postNotes } from "@/lib/action";
 import { useAllNote } from "@/store/data";
-import { HomeIcon, PlusCircle, TrashIcon } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import {
+  HomeIcon,
+  PanelRightOpen,
+  PlusCircle,
+  StickyNoteIcon,
+  TrashIcon,
+} from "lucide-react";
+import { FormEvent, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { ModeToggle } from "@/components/ui/mode-toggle";
+import { loadingStore, selectIdStore, submitTypeStore } from "@/store/form";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Sidebar = () => {
+  const [isSidebar, setIsSidebar] = useState<boolean>(true);
   const { notes, setNotes } = useAllNote();
-  const [loading, isLoading] = useState(false);
+  const { loading, isLoading } = loadingStore();
+  const { submitType, setSubmitType } = submitTypeStore();
+  const { selectId, setSelectedId } = selectIdStore();
+  const newId = notes.length + 1;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,73 +36,143 @@ const Sidebar = () => {
     return null;
   }
 
-  const paramsId = useParams();
-  const newId = notes.length + 1;
+  const handleForm = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    switch (submitType) {
+      case "create":
+        setNotes([
+          ...notes,
+          {
+            id: newId.toString(),
+            title: "New Note",
+            content: "",
+          },
+        ]);
+        postNotes({
+          id: newId.toString(),
+          title: "New Note",
+          content: "",
+        });
+        break;
+      case "delete":
+        deleteNotes(selectId);
+        setNotes([...notes.filter((n) => n.id !== selectId)]);
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
-    <nav className="flex flex-col gap-2 w-[16vw] h-screen overflow-y-auto py-10 px-6 border-r">
-      {!loading && (
+    <nav
+      className={`flex flex-col gap-2 ${
+        isSidebar ? "w-[16vw] px-6" : "w-[5vw] px-2"
+      } h-screen py-10 border-r transition-all`}
+    >
+      <Button
+        title="Hide Sidebar"
+        className="flex-end"
+        size="icon"
+        type="button"
+        variant="outline"
+        onClick={() => setIsSidebar(!isSidebar)}
+      >
+        <PanelRightOpen size={16} />
+      </Button>
+      {loading ? (
+        <Skeleton className="w-full h-full" />
+      ) : (
         <>
           <Button
             title="Home dashboard"
-            className="justify-start"
+            className={isSidebar ? "justify-start" : ""}
             asChild
             variant="ghost"
-            size="sm"
-          >
-            <Link to="/" className="flex gap-2">
-              <HomeIcon size={18} /> Home
-            </Link>
-          </Button>
-          <p className="text-neutral-500 text-[0.65rem] col-[1/-1] mx-2 mt-4 font-semibold tracking-wider select-none uppercase first:mt-0.5">
-            Notes
-          </p>
-          {notes.map((note) => {
-            return (
-              <Button
-                key={note.id}
-                title={note.title}
-                className="justify-start"
-                asChild
-                variant="ghost"
-                size="sm"
-              >
-                <div className="flex justify-between">
-                  <Link
-                    className="text-ellipsis overflow-hidden"
-                    to={`/note/${note.id}`}
-                    reloadDocument
-                  >
-                    {note.title}
-                  </Link>
-                  <button
-                    onClick={() => deleteNotes(paramsId.id)}
-                    className="p-1 rounded-md hover:bg-foreground hover:text-background"
-                  >
-                    <TrashIcon size={14} />
-                  </button>
-                </div>
-              </Button>
-            );
-          })}
-          <Button
-            title="Create new note"
-            onClick={() =>
-              postNotes({
-                id: newId.toString(),
-                title: "New Note",
-                content: "",
-              })
-            }
-            className="justify-between text-ellipsis overflow-hidden"
-            size="sm"
+            size={isSidebar ? "sm" : "icon"}
             type="button"
           >
-            Create Note <PlusCircle size={20} />
+            {isSidebar ? (
+              <Link to="/" className="flex gap-2">
+                <HomeIcon size={16} /> Home
+              </Link>
+            ) : (
+              <Link to="/">
+                <HomeIcon size={16} />
+              </Link>
+            )}
           </Button>
           <p className="text-neutral-500 text-[0.65rem] col-[1/-1] mx-2 mt-4 font-semibold tracking-wider select-none uppercase first:mt-0.5">
-            Setings
+            {isSidebar ? "Notes" : <hr />}
           </p>
+          <form className="flex flex-col gap-2" onSubmit={handleForm}>
+            <div className="max-h-[40vh] overflow-y-auto">
+              {notes.map((note) => {
+                return (
+                  <>
+                    {isSidebar ? (
+                      <Button
+                        key={note.id}
+                        title={note.title}
+                        className="justify-start"
+                        asChild
+                        variant="ghost"
+                        size="sm"
+                        type="button"
+                      >
+                        <div className="w-full flex justify-between gap-2">
+                          <Link
+                            className="text-ellipsis overflow-hidden"
+                            to={`/note/${note.id}`}
+                          >
+                            {note.title}
+                          </Link>
+                          <button
+                            type="submit"
+                            onClick={() => {
+                              setSubmitType("delete");
+                              setSelectedId(note.id!);
+                            }}
+                            className="p-1 rounded-md hover:bg-foreground hover:text-background"
+                          >
+                            <TrashIcon size={14} />
+                          </button>
+                        </div>
+                      </Button>
+                    ) : (
+                      <Button asChild type="button" size="sm" variant="ghost">
+                        <Link to={`/note/${note.id}`}>
+                          <StickyNoteIcon size={16} />
+                        </Link>
+                      </Button>
+                    )}
+                  </>
+                );
+              })}
+            </div>
+            <Button
+              title="Create new note"
+              onClick={() => setSubmitType("create")}
+              className={
+                isSidebar
+                  ? "w-full justify-between text-ellipsis overflow-hidden gap-2"
+                  : ""
+              }
+              size={isSidebar ? "sm" : "icon"}
+              type="submit"
+            >
+              {isSidebar ? (
+                <>
+                  Create Note <PlusCircle size={20} />
+                </>
+              ) : (
+                <PlusCircle size={20} />
+              )}
+            </Button>
+          </form>
+          <p className="text-neutral-500 text-[0.65rem] col-[1/-1] mx-2 mt-4 font-semibold tracking-wider select-none uppercase first:mt-0.5">
+            {isSidebar ? "Setings" : <hr />}
+          </p>
+
           <ModeToggle />
         </>
       )}

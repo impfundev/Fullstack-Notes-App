@@ -1,15 +1,30 @@
 import { useEditor, EditorContent, BubbleMenu } from "@tiptap/react";
 import { Button } from "@/components/ui/button";
-import { RedoIcon, SaveIcon, UndoIcon } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  Loader2Icon,
+  RedoIcon,
+  SaveIcon,
+  UndoIcon,
+} from "lucide-react";
 import { MenuBar } from "@/components/ui/editor/menu-bar";
 import { extensions } from "@/components/ui/editor/extensions";
 import { Notes } from "@/lib/types";
 import { useNote } from "@/store/note";
 import { updateNotes } from "@/lib/action";
 import Navbar from "@/components/ui/navbar";
+import { FormEvent } from "react";
+import { loadingStore } from "@/store/form";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
+import { useAllNote } from "@/store/data";
 
 const NoteEditor = ({ note, id }: { note: Notes; id: string }) => {
   const { setNote } = useNote();
+  const { notes, setNotes } = useAllNote();
+  const { loading, isLoading } = loadingStore();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const editor = useEditor({
     extensions,
@@ -28,18 +43,72 @@ const NoteEditor = ({ note, id }: { note: Notes; id: string }) => {
     },
   });
 
+  const handleForm = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    isLoading(true);
+    try {
+      toast({
+        description: "Your note has been saved.",
+      });
+      updateNotes(id, note);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+      });
+    }
+    isLoading(false);
+  };
+
   return (
-    <>
+    <form onSubmit={handleForm} className="flex flex-col gap-4">
       <Navbar>
-        <Button
-          onClick={() => updateNotes(id, note)}
-          size="sm"
-          className="gap-2"
-        >
-          <SaveIcon size={20} /> Save
+        <div className="flex gap-4">
+          <Button
+            type="button"
+            onClick={() => navigate(-1)}
+            size="sm"
+            className="gap-2"
+          >
+            <ChevronLeftIcon size={20} /> Back
+          </Button>
+          {editor && (
+            <div className="flex gap-1">
+              <Button
+                type="button"
+                title="undo"
+                variant="ghost"
+                onClick={() => editor.chain().focus().undo().run()}
+                disabled={!editor.can().chain().focus().undo().run()}
+              >
+                <UndoIcon size={16} absoluteStrokeWidth />
+              </Button>
+              <Button
+                type="button"
+                title="redo"
+                variant="ghost"
+                onClick={() => editor.chain().focus().redo().run()}
+                disabled={!editor.can().chain().focus().redo().run()}
+              >
+                <RedoIcon size={16} absoluteStrokeWidth />
+              </Button>
+            </div>
+          )}
+        </div>
+        <Button type="submit" size="sm" className="gap-2" disabled={loading}>
+          {loading ? (
+            <>
+              <Loader2Icon size={20} className="animate-spin" /> Save
+            </>
+          ) : (
+            <>
+              <SaveIcon size={20} /> Save
+            </>
+          )}
         </Button>
       </Navbar>
-      <div className="px-10 flex flex-col gap-6">
+      <div className="pb-10 px-10 flex flex-col gap-6">
         <input
           id="title"
           name="title"
@@ -52,36 +121,25 @@ const NoteEditor = ({ note, id }: { note: Notes; id: string }) => {
               ...note,
               title: e.target.value,
             });
+            setNotes(
+              notes.map((n) => {
+                if (n.id === id) {
+                  return { ...n, title: e.target.value };
+                }
+
+                return n;
+              })
+            );
           }}
         />
         {editor && (
-          <>
-            <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
-              <MenuBar editor={editor} />
-            </BubbleMenu>
-            <div className="flex gap-1">
-              <Button
-                title="undo"
-                variant="ghost"
-                onClick={() => editor.chain().focus().undo().run()}
-                disabled={!editor.can().chain().focus().undo().run()}
-              >
-                <UndoIcon size={16} absoluteStrokeWidth />
-              </Button>
-              <Button
-                title="redo"
-                variant="ghost"
-                onClick={() => editor.chain().focus().redo().run()}
-                disabled={!editor.can().chain().focus().redo().run()}
-              >
-                <RedoIcon size={16} absoluteStrokeWidth />
-              </Button>
-            </div>
-          </>
+          <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+            <MenuBar editor={editor} />
+          </BubbleMenu>
         )}
         <EditorContent editor={editor} />
       </div>
-    </>
+    </form>
   );
 };
 

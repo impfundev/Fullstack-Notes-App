@@ -1,4 +1,5 @@
 import Sidebar from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/toaster";
 import { ReactNode } from "react";
 
 const Dashboard = ({ children }: { children: ReactNode }) => {
@@ -6,6 +7,7 @@ const Dashboard = ({ children }: { children: ReactNode }) => {
     <main className="w-full flex">
       <Sidebar />
       {children}
+      <Toaster />
     </main>
   );
 };

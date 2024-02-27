@@ -1,15 +1,8 @@
 import { ReactNode } from "react";
-import { Button } from "@/components/ui/button";
-import { ChevronLeftIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 const Navbar = ({ children }: { children?: ReactNode }) => {
-  const navigate = useNavigate();
   return (
-    <nav className="py-4 px-10 flex justify-between border-b">
-      <Button onClick={() => navigate(-1)} size="sm" className="gap-2">
-        <ChevronLeftIcon size={20} /> Back
-      </Button>
+    <nav className="sticky top-0 bg-background py-4 px-10 flex justify-between border-b z-50">
       {children}
     </nav>
   );

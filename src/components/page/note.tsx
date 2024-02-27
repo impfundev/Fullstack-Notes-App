@@ -1,6 +1,7 @@
 import Dashboard from "@/components/dashboard";
 import Layout from "@/components/dashboard/Layout";
 import NoteEditor from "@/components/ui/editor";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { updateNotes } from "@/lib/action";
@@ -25,7 +26,10 @@ const Note = () => {
     <Dashboard>
       <Layout>
         {loading ? (
-          <h1 className="p-10">Loading data</h1>
+          <>
+            <Skeleton className="my-4 mx-10 h-[10vh]" />
+            <Skeleton className="mx-10 h-[80vh]" />
+          </>
         ) : (
           <NoteEditor note={note} id={id!} />
         )}
