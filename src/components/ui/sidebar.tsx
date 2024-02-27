@@ -92,11 +92,11 @@ const Sidebar = () => {
             type="button"
           >
             {isSidebar ? (
-              <Link to="/" className="flex gap-2">
+              <Link to="/dashboard" className="flex gap-2">
                 <HomeIcon size={16} /> Home
               </Link>
             ) : (
-              <Link to="/">
+              <Link to="/dashboard">
                 <HomeIcon size={16} />
               </Link>
             )}
@@ -122,7 +122,7 @@ const Sidebar = () => {
                         <div className="w-full flex justify-between gap-2">
                           <Link
                             className="text-ellipsis overflow-hidden"
-                            to={`/note/${note.id}`}
+                            to={`/dashboard/note/${note.id}`}
                           >
                             {note.title}
                           </Link>
@@ -140,7 +140,7 @@ const Sidebar = () => {
                       </Button>
                     ) : (
                       <Button asChild type="button" size="sm" variant="ghost">
-                        <Link to={`/note/${note.id}`}>
+                        <Link to={`/dashboard/note/${note.id}`}>
                           <StickyNoteIcon size={16} />
                         </Link>
                       </Button>
