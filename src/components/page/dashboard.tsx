@@ -1,5 +1,5 @@
-import Dashboard from "@/components/dashboard";
-import Layout from "@/components/dashboard/Layout";
+import Dashboard from "@/components/layout/Dashboard";
+import Layout from "@/components/layout/Layout";
 import {
   Card,
   CardContent,
@@ -14,15 +14,15 @@ import { useAllNote } from "@/store/data";
 import { FormEvent, useEffect } from "react";
 import { deleteNotes, getNotes, postNotes } from "@/lib/action";
 import { Link } from "react-router-dom";
-import { loadingStore, selectIdStore, submitTypeStore } from "@/store/form";
+import { FormStore } from "@/store/form";
 import { useSession } from "@clerk/clerk-react";
 
 const DashboardPage = () => {
   const { session, isLoaded } = useSession();
   const { notes, setNotes } = useAllNote();
-  const { loading, isLoading } = loadingStore();
-  const { submitType, setSubmitType } = submitTypeStore();
-  const { selectId, setSelectedId } = selectIdStore();
+  const { loading, isLoading } = FormStore.loadingStore();
+  const { submitType, setSubmitType } = FormStore.submitTypeStore();
+  const { selectId, setSelectedId } = FormStore.selectIdStore();
   const newId = notes.length + 1;
 
   useEffect(() => {

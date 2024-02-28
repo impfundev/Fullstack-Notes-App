@@ -11,7 +11,7 @@ import {
 import { FormEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ModeToggle } from "@/components/ui/mode-toggle";
-import { loadingStore, selectIdStore, submitTypeStore } from "@/store/form";
+import { FormStore } from "@/store/form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserButton, useSession } from "@clerk/clerk-react";
 
@@ -19,9 +19,9 @@ const Sidebar = () => {
   const { session, isLoaded } = useSession();
   const [isSidebar, setIsSidebar] = useState<boolean>(true);
   const { notes, setNotes } = useAllNote();
-  const { loading, isLoading } = loadingStore();
-  const { submitType, setSubmitType } = submitTypeStore();
-  const { selectId, setSelectedId } = selectIdStore();
+  const { loading, isLoading } = FormStore.loadingStore();
+  const { submitType, setSubmitType } = FormStore.submitTypeStore();
+  const { selectId, setSelectedId } = FormStore.selectIdStore();
   const newId = notes.length + 1;
 
   useEffect(() => {

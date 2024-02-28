@@ -9,7 +9,7 @@ type LoadingAction = {
   isLoading: (state: Loading["loading"]) => void;
 };
 
-export const loadingStore = create<Loading & LoadingAction>((set) => ({
+const loadingStore = create<Loading & LoadingAction>((set) => ({
   loading: false,
   isLoading: (loading) => set(() => ({ loading: loading })),
 }));
@@ -23,7 +23,7 @@ type SubmitTypeAction = {
   setSubmitType: (state: SubmitType["submitType"]) => void;
 };
 
-export const submitTypeStore = create<SubmitType & SubmitTypeAction>((set) => ({
+const submitTypeStore = create<SubmitType & SubmitTypeAction>((set) => ({
   submitType: "",
   setSubmitType: (submitType) => set(() => ({ submitType: submitType })),
 }));
@@ -37,7 +37,9 @@ type SelectedIdAction = {
   setSelectedId: (state: SelectedId["selectId"]) => void;
 };
 
-export const selectIdStore = create<SelectedId & SelectedIdAction>((set) => ({
+const selectIdStore = create<SelectedId & SelectedIdAction>((set) => ({
   selectId: "",
   setSelectedId: (selectId) => set(() => ({ selectId: selectId })),
 }));
+
+export const FormStore = { loadingStore, selectIdStore, submitTypeStore };

@@ -1,5 +1,5 @@
-import Dashboard from "@/components/dashboard";
-import Layout from "@/components/dashboard/Layout";
+import Dashboard from "@/components/layout/Dashboard";
+import Layout from "@/components/layout/Layout";
 import NoteEditor from "@/components/ui/editor";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
