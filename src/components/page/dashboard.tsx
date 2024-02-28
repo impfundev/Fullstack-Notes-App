@@ -15,8 +15,10 @@ import { FormEvent, useEffect } from "react";
 import { deleteNotes, getNotes, postNotes } from "@/lib/action";
 import { Link } from "react-router-dom";
 import { loadingStore, selectIdStore, submitTypeStore } from "@/store/form";
+import { useSession } from "@clerk/clerk-react";
 
 const DashboardPage = () => {
+  const { session, isLoaded } = useSession();
   const { notes, setNotes } = useAllNote();
   const { loading, isLoading } = loadingStore();
   const { submitType, setSubmitType } = submitTypeStore();
@@ -25,7 +27,9 @@ const DashboardPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      isLoading(true);
+      if (!isLoaded) {
+        isLoading(true);
+      }
       await getNotes().then((data) => setNotes(data!));
       isLoading(false);
     };
@@ -43,12 +47,16 @@ const DashboardPage = () => {
             id: newId.toString(),
             title: "New Note",
             content: "",
+            user: session?.user.fullName,
+            userId: session?.user.id,
           },
         ]);
         postNotes({
           id: newId.toString(),
           title: "New Note",
           content: "",
+          user: session?.user.fullName,
+          userId: session?.user.id,
         });
         break;
       case "delete":
@@ -79,39 +87,41 @@ const DashboardPage = () => {
               </Button>
             </div>
             <div className="py-10 grid grid-cols-3 gap-4">
-              {notes.map((note) => (
-                <Card key={note.id} className="w-full">
-                  <CardHeader>
-                    <CardTitle>{note.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent
-                    className="my-4 prose dark:prose-invert w-full h-[160px] overflow-y-auto"
-                    dangerouslySetInnerHTML={{ __html: note.content! }}
-                  />
-                  <CardFooter className="flex justify-between gap-2">
-                    <Button
-                      type="submit"
-                      variant="destructive"
-                      className="w-full gap-2"
-                      onClick={() => {
-                        setSubmitType("delete");
-                        setSelectedId(note.id!);
-                      }}
-                    >
-                      <TrashIcon size={20} />
-                      Delete
-                    </Button>
-                    <Button type="button" className="w-full" asChild>
-                      <Link
-                        to={`/dashboard/note/${note.id}`}
-                        className="flex gap-2"
+              {notes
+                .filter((note) => note.userId === session?.user.id)
+                .map((note) => (
+                  <Card key={note.id} className="w-full">
+                    <CardHeader>
+                      <CardTitle>{note.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent
+                      className="my-4 prose dark:prose-invert w-full h-[160px] overflow-y-auto"
+                      dangerouslySetInnerHTML={{ __html: note.content! }}
+                    />
+                    <CardFooter className="flex justify-between gap-2">
+                      <Button
+                        type="submit"
+                        variant="destructive"
+                        className="w-full gap-2"
+                        onClick={() => {
+                          setSubmitType("delete");
+                          setSelectedId(note.id!);
+                        }}
                       >
-                        <NotebookPenIcon size={20} /> Edit
-                      </Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+                        <TrashIcon size={20} />
+                        Delete
+                      </Button>
+                      <Button type="button" className="w-full" asChild>
+                        <Link
+                          to={`/dashboard/note/${note.id}`}
+                          className="flex gap-2"
+                        >
+                          <NotebookPenIcon size={20} /> Edit
+                        </Link>
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
             </div>
           </form>
         )}

@@ -18,6 +18,7 @@ import { loadingStore } from "@/store/form";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { useAllNote } from "@/store/data";
+import { useSession } from "@clerk/clerk-react";
 
 const NoteEditor = ({ note, id }: { note: Notes; id: string }) => {
   const { setNote } = useNote();
@@ -25,6 +26,7 @@ const NoteEditor = ({ note, id }: { note: Notes; id: string }) => {
   const { loading, isLoading } = loadingStore();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { session } = useSession();
 
   const editor = useEditor({
     extensions,
@@ -46,11 +48,17 @@ const NoteEditor = ({ note, id }: { note: Notes; id: string }) => {
   const handleForm = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     isLoading(true);
+    setNote({
+      ...note,
+      user: session?.user.fullName,
+      userId: session?.user.id,
+    });
     try {
+      updateNotes(id, note);
+      isLoading(false);
       toast({
         description: "Your note has been saved.",
       });
-      updateNotes(id, note);
     } catch (error) {
       toast({
         variant: "destructive",
@@ -58,7 +66,6 @@ const NoteEditor = ({ note, id }: { note: Notes; id: string }) => {
         description: "There was a problem with your request.",
       });
     }
-    isLoading(false);
   };
 
   return (
@@ -115,7 +122,7 @@ const NoteEditor = ({ note, id }: { note: Notes; id: string }) => {
           type="text"
           placeholder="Title"
           defaultValue={note.title}
-          className="bg-background text-foreground text-4xl focus:outline-none"
+          className="bg-background text-foreground scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl focus:outline-none"
           onChange={(e) => {
             setNote({
               ...note,

@@ -13,8 +13,10 @@ import { Link } from "react-router-dom";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { loadingStore, selectIdStore, submitTypeStore } from "@/store/form";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UserButton, useSession } from "@clerk/clerk-react";
 
 const Sidebar = () => {
+  const { session, isLoaded } = useSession();
   const [isSidebar, setIsSidebar] = useState<boolean>(true);
   const { notes, setNotes } = useAllNote();
   const { loading, isLoading } = loadingStore();
@@ -24,7 +26,9 @@ const Sidebar = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      isLoading(true);
+      if (!isLoaded) {
+        isLoading(true);
+      }
       await getNotes().then((data) => setNotes(data!));
       isLoading(false);
     };
@@ -46,12 +50,16 @@ const Sidebar = () => {
             id: newId.toString(),
             title: "New Note",
             content: "",
+            user: session?.user.fullName,
+            userId: session?.user.id,
           },
         ]);
         postNotes({
           id: newId.toString(),
           title: "New Note",
           content: "",
+          user: session?.user.fullName,
+          userId: session?.user.id,
         });
         break;
       case "delete":
@@ -66,7 +74,7 @@ const Sidebar = () => {
   return (
     <nav
       className={`flex flex-col gap-2 ${
-        isSidebar ? "w-[16vw] px-6" : "w-[5vw] px-2"
+        isSidebar ? "w-[16vw] px-6" : "w-[5vw] px-1"
       } h-screen py-10 border-r transition-all`}
     >
       <Button
@@ -101,24 +109,25 @@ const Sidebar = () => {
               </Link>
             )}
           </Button>
-          <p className="text-neutral-500 text-[0.65rem] col-[1/-1] mx-2 mt-4 font-semibold tracking-wider select-none uppercase first:mt-0.5">
+          <span className="text-neutral-500 text-[0.65rem] col-[1/-1] mx-2 mt-4 font-semibold tracking-wider select-none uppercase first:mt-0.5">
             {isSidebar ? "Notes" : <hr />}
-          </p>
+          </span>
           <form className="flex flex-col gap-2" onSubmit={handleForm}>
             <div className="max-h-[40vh] overflow-y-auto">
-              {notes.map((note) => {
-                return (
-                  <>
-                    {isSidebar ? (
-                      <Button
-                        key={note.id}
-                        title={note.title}
-                        className="justify-start"
-                        asChild
-                        variant="ghost"
-                        size="sm"
-                        type="button"
-                      >
+              {notes
+                .filter((note) => note.userId === session?.user.id)
+                .map((note) => {
+                  return (
+                    <Button
+                      key={note.id}
+                      title={note.title}
+                      className={isSidebar ? "justify-start" : ""}
+                      asChild
+                      variant="ghost"
+                      size={isSidebar ? "sm" : "icon"}
+                      type="button"
+                    >
+                      {isSidebar ? (
                         <div className="w-full flex justify-between gap-2">
                           <Link
                             className="text-ellipsis overflow-hidden"
@@ -137,17 +146,14 @@ const Sidebar = () => {
                             <TrashIcon size={14} />
                           </button>
                         </div>
-                      </Button>
-                    ) : (
-                      <Button asChild type="button" size="sm" variant="ghost">
+                      ) : (
                         <Link to={`/dashboard/note/${note.id}`}>
                           <StickyNoteIcon size={16} />
                         </Link>
-                      </Button>
-                    )}
-                  </>
-                );
-              })}
+                      )}
+                    </Button>
+                  );
+                })}
             </div>
             <Button
               title="Create new note"
@@ -169,11 +175,15 @@ const Sidebar = () => {
               )}
             </Button>
           </form>
-          <p className="text-neutral-500 text-[0.65rem] col-[1/-1] mx-2 mt-4 font-semibold tracking-wider select-none uppercase first:mt-0.5">
+          <span className="text-neutral-500 text-[0.65rem] col-[1/-1] mx-2 mt-4 font-semibold tracking-wider select-none uppercase first:mt-0.5">
             {isSidebar ? "Setings" : <hr />}
-          </p>
-
-          <ModeToggle />
+          </span>
+          <div className="flex flex-col gap-4">
+            <Button title="profile" type="button" size="icon" variant="ghost">
+              <UserButton />
+            </Button>
+            <ModeToggle />
+          </div>
         </>
       )}
     </nav>

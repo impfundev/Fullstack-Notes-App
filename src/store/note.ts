@@ -5,6 +5,8 @@ type Note = {
     id?: string;
     title?: string;
     content?: string;
+    user?: string | null;
+    userId?: string;
   };
 };
 
@@ -17,6 +19,8 @@ export const useNote = create<Note & NoteAction>((set) => ({
     id: "",
     title: "",
     content: "",
+    user: "",
+    userId: "",
   },
   setNote: (note) => set(() => ({ note: note })),
 }));

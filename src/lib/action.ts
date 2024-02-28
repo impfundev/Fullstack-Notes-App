@@ -1,7 +1,7 @@
 import axios from "axios";
-import { Notes } from "./types";
+import { Notes } from "@/lib/types";
 
-const noteApiUrl = "https://65daf43b3ea883a15290ec32.mockapi.io/api/notes";
+const noteApiUrl = `https://65daf43b3ea883a15290ec32.mockapi.io/api/notes`;
 
 const getNotes = () => {
   const request = axios.get(noteApiUrl);

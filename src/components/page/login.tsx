@@ -2,7 +2,7 @@ import { SignIn } from "@clerk/clerk-react";
 
 const LogInPage = () => (
   <div className="relative w-full h-screen flex flex-col items-center justify-center">
-    <SignIn path="/login" routing="path" signUpUrl="/sign-up" />
+    <SignIn path="/login" signUpUrl="/sign-up" afterSignInUrl="/dashboard" />
     <div className="absolute w-[18rem] h-[18rem] md:w-[28rem] md:h-[28rem] bg-gradient-to-r from-indigo-500 to-pink-500 rounded-full blur-3xl opacity-30 animate-spin duration-1000 -z-50"></div>
   </div>
 );
