@@ -13,11 +13,12 @@ import { Link } from "react-router-dom";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { FormStore } from "@/store/form";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UserButton, useSession } from "@clerk/clerk-react";
+import { UserButton } from "@/components/ui/user";
+import { useSession } from "@clerk/clerk-react";
 
 const Sidebar = () => {
   const { session, isLoaded } = useSession();
-  const [isSidebar, setIsSidebar] = useState<boolean>(true);
+  const [isSidebar, setIsSidebar] = useState<boolean>(false);
   const { notes, setNotes } = useAllNote();
   const { loading, isLoading } = FormStore.loadingStore();
   const { submitType, setSubmitType } = FormStore.submitTypeStore();
@@ -73,16 +74,17 @@ const Sidebar = () => {
 
   return (
     <nav
-      className={`flex flex-col gap-2 ${
-        isSidebar ? "w-[16vw] px-6" : "w-[5vw] px-1"
-      } h-screen py-10 border-r transition-all`}
+      className={`fixed md:static w-full flex flex-col gap-2 ${
+        isSidebar
+          ? "bg-background max-w-full md:max-w-[26vw] lg:max-w-[16vw] px-8 md:px-6"
+          : "max-w-[1vw] md:max-w-[9vw] lg:max-w-[6.3vw] xl:max-w-[4.5vw] 2xl:w-[2.6vw] px-8 md:px-3"
+      } h-screen py-4 md:border-r transition-all z-50`}
     >
       <Button
         title="Hide Sidebar"
-        className="flex-end"
+        className="fixed md:static bottom-16"
         size="icon"
         type="button"
-        variant="outline"
         onClick={() => setIsSidebar(!isSidebar)}
       >
         <PanelRightOpen size={16} />
@@ -90,7 +92,11 @@ const Sidebar = () => {
       {loading ? (
         <Skeleton className="w-full h-full" />
       ) : (
-        <>
+        <div
+          className={`${
+            isSidebar ? "block" : "hidden md:block"
+          } flex flex-col gap-2`}
+        >
           <Button
             title="Home dashboard"
             className={isSidebar ? "justify-start" : ""}
@@ -109,10 +115,10 @@ const Sidebar = () => {
               </Link>
             )}
           </Button>
-          <span className="text-neutral-500 text-[0.65rem] col-[1/-1] mx-2 mt-4 font-semibold tracking-wider select-none uppercase first:mt-0.5">
+          <div className="text-neutral-500 text-[0.65rem] mx-2 mt-2 font-semibold tracking-wider select-none uppercase first:mt-0.5">
             {isSidebar ? "Notes" : <hr />}
-          </span>
-          <form className="flex flex-col gap-2" onSubmit={handleForm}>
+          </div>
+          <form className="py-2 flex flex-col gap-2" onSubmit={handleForm}>
             <div className="max-h-[40vh] overflow-y-auto">
               {notes
                 .filter((note) => note.userId === session?.user.id)
@@ -175,16 +181,14 @@ const Sidebar = () => {
               )}
             </Button>
           </form>
-          <span className="text-neutral-500 text-[0.65rem] col-[1/-1] mx-2 mt-4 font-semibold tracking-wider select-none uppercase first:mt-0.5">
+          <div className="text-neutral-500 text-[0.65rem] mx-2 mt-2 font-semibold tracking-wider select-none uppercase first:mt-0.5">
             {isSidebar ? "Setings" : <hr />}
-          </span>
-          <div className="flex flex-col gap-4">
-            <Button title="profile" type="button" size="icon" variant="ghost">
-              <UserButton />
-            </Button>
+          </div>
+          <div className="pt-2 flex flex-col gap-4">
+            {isLoaded && <UserButton />}
             <ModeToggle />
           </div>
-        </>
+        </div>
       )}
     </nav>
   );

@@ -71,7 +71,7 @@ const NoteEditor = ({ note, id }: { note: Notes; id: string }) => {
   return (
     <form onSubmit={handleForm} className="flex flex-col gap-4">
       <Navbar>
-        <div className="flex gap-4">
+        <div className="flex gap-1 md:gap-4">
           <Button
             type="button"
             onClick={() => navigate(-1)}
