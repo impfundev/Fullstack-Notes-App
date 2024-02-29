@@ -1,30 +1,45 @@
-# React + TypeScript + Vite
+# React Notes App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![Homepage](/public/Homepage.png)
 
-Currently, two official plugins are available:
+Notes web app yang dibangun dan dikembangan dengan React, sedikit terinspirasi dengan Notion sebagai aplikasi produktifitas.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Stack:
 
-## Expanding the ESLint configuration
+- React (Vite)
+- React Router
+- Zustand (State Management)
+- Typescript
+- Clerk (User Auth)
+- Tailwind CSS
+- Shadcn UI/Radix UI
+- Tiptap (Rich Text Editor)
+- Axios
+- Lucid React (Icon Library)
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Feature
 
-- Configure the top-level `parserOptions` property like this:
+- Mobile Responsive
+- Theme Mode (Light, Dark, System)
+- Sidebar Responsive
+- Rich Text Editor (Type Text, Image, Link, Todo List, etc.)
+- Authentication
+- User Profile Setting
+- Note Management
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+![Home Dashboard](/public/Home_Dashboard.png)
+![Note Page](/public/responsive_desktop.png)
+
+## Jalankan App
+
+### 2. Install Dependency
+
+```
+npm install
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+### 3. Jalankan Aplikasi
+
+```
+npm run dev
+```

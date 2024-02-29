@@ -77,7 +77,7 @@ const Sidebar = () => {
       className={`fixed md:static w-full flex flex-col gap-2 ${
         isSidebar
           ? "bg-background max-w-full md:max-w-[26vw] lg:max-w-[16vw] px-8 md:px-6"
-          : "max-w-[1vw] md:max-w-[9vw] lg:max-w-[6.3vw] xl:max-w-[4.5vw] 2xl:w-[2.6vw] px-8 md:px-3"
+          : "max-w-[1vw] md:max-w-[9vw] lg:max-w-[6.3vw] xl:max-w-[5vw] 2xl:w-[2.6vw] px-8 md:px-3"
       } h-screen py-4 md:border-r transition-all z-50`}
     >
       <Button
