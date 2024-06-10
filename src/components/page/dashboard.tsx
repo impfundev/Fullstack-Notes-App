@@ -15,10 +15,10 @@ import { FormEvent, useEffect } from "react";
 import { deleteNotes, getNotes, postNotes } from "@/lib/action";
 import { Link } from "react-router-dom";
 import { FormStore } from "@/store/form";
-import { useSession } from "@clerk/clerk-react";
 
 const DashboardPage = () => {
-  const { session, isLoaded } = useSession();
+  const isLoaded = true;
+  let session: any;
   const { notes, setNotes } = useAllNote();
   const { loading, isLoading } = FormStore.loadingStore();
   const { submitType, setSubmitType } = FormStore.submitTypeStore();

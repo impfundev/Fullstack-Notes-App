@@ -18,7 +18,6 @@ import { FormStore } from "@/store/form";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { useAllNote } from "@/store/data";
-import { useSession } from "@clerk/clerk-react";
 
 const NoteEditor = ({ note, id }: { note: Notes; id: string }) => {
   const { setNote } = useNote();
@@ -26,7 +25,7 @@ const NoteEditor = ({ note, id }: { note: Notes; id: string }) => {
   const { loading, isLoading } = FormStore.loadingStore();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { session } = useSession();
+  let session: any;
 
   const editor = useEditor({
     extensions,

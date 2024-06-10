@@ -1,10 +1,9 @@
 import HomeIcon from "@/assets/HomeIcon";
 import { Button } from "@/components/ui/button";
-import { useSession } from "@clerk/clerk-react";
 import { Link } from "react-router-dom";
 
 const Home = () => {
-  const { isSignedIn } = useSession();
+  const isSignedIn = true;
   return (
     <main className="relative w-full h-screen flex flex-col gap-6 items-center justify-center">
       <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-indigo-500 to-pink-500 bg-clip-text text-transparent drop-shadow-md">

@@ -14,10 +14,10 @@ import { ModeToggle } from "@/components/ui/mode-toggle";
 import { FormStore } from "@/store/form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserButton } from "@/components/ui/user";
-import { useSession } from "@clerk/clerk-react";
 
 const Sidebar = () => {
-  const { session, isLoaded } = useSession();
+  const isLoaded = true;
+  let session: any;
   const [isSidebar, setIsSidebar] = useState<boolean>(false);
   const { notes, setNotes } = useAllNote();
   const { loading, isLoading } = FormStore.loadingStore();
